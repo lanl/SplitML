@@ -1,6 +1,6 @@
 # SplitML
 
-Signal Processing Library for Interference rejection via Machine Learning.
+Signal Processing Library for Interference Rejection via Machine Learning.
 
 ## Installation/setup
 
