@@ -73,7 +73,7 @@ class SSA():
             components (list or None): list of component indices to use or None to use all
         """
         X_lag, _ = lag_time_series(X, self.n_lags)
-        X_proj = self.transform(X_lag, components)
+        X_proj = self.transform(X_lag.squeeze(), components)
         if components is None:
             X_pred = X_proj @ self.Vh
         else:
