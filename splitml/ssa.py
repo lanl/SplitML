@@ -45,8 +45,8 @@ class SSA():
             X (ndarray): array of time series, shape (n, len(time))
         """
         self.X_len = X.shape[1]
-        X_lag, _ = lag_time_series(X, self.n_lags).squeeze()
-        U, S, Vh = svd(X_lag, full_matrices=False)
+        X_lag, _ = lag_time_series(X, self.n_lags)
+        U, S, Vh = svd(X_lag.squeeze(), full_matrices=False)
         self.U = U
         self.S = S
         self.Vh = Vh
