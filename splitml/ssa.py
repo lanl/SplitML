@@ -61,9 +61,9 @@ class SSA():
             components (list or None): list of component indices to use or None to use all
         """
         if components is None:
-            X_proj = X @ Vh.conj().T
+            X_proj = X @ self.Vh.conj().T
         else: 
-            X_proj = X @ Vh[components, :].conj().T
+            X_proj = X @ self.Vh[components, :].conj().T
         return X_proj
 
     def predict(self, X, components=None):
@@ -74,9 +74,9 @@ class SSA():
         """
         X_proj = self.transform(X, components)
         if components is None:
-            X_pred = X_proj @ Vh
+            X_pred = X_proj @ self.Vh
         else:
-            X_pred = X_proj @ Vh[components, :]
+            X_pred = X_proj @ self.Vh[components, :]
         n_win = X_pred.shape[0]
         X_pred = diag_avg(X_pred.T, self.X_len, self.n_lags, n_win, n_win)
         return X_pred
