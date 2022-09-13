@@ -28,7 +28,7 @@ def lag_time_series(y_orig, n_lags):
 
 class SSA():
 
-    def __init__(self, n_lags):
+    def __init__(self, n_lags, n_components=None):
         """
         Initialize SSA.
             n_lags (int): window size for time series
@@ -38,6 +38,7 @@ class SSA():
         self.U = None
         self.S = None
         self.Vh = None
+        self.n_components = n_components
 
     def fit(self, X):
         """
@@ -46,10 +47,12 @@ class SSA():
         """
         self.X_len = X.shape[1]
         X_lag, _ = lag_time_series(X, self.n_lags)
+        if self.n_components is None:
+            self.n_components = np.min(X_lag.squeeze().shape)
         U, S, Vh = svd(X_lag.squeeze(), full_matrices=False)
         self.U = U
-        self.S = S
-        self.Vh = Vh
+        self.S = S[:self.n_components]
+        self.Vh = Vh[:self.n_components, :]
 
     def get_basis(self):
         return self.Vh
@@ -75,9 +78,11 @@ class SSA():
         X_lag, _ = lag_time_series(X, self.n_lags)
         X_proj = self.transform(X_lag.squeeze(), components)
         if components is None:
-            X_pred = X_proj @ self.Vh
+            #X_pred = X_proj @ self.Vh
+            X_pred = np.einsum('ij,jk->jki', X_proj, self.Vh)
         else:
-            X_pred = X_proj @ self.Vh[components, :]
+            #X_pred = X_proj @ self.Vh[components, :]
+            X_pred = np.einsum('ij,jk->jki', X_proj, self.Vh[components, :])
         n_win = X_pred.shape[0]
         X_pred = diag_avg(X_pred.T, self.X_len, self.n_lags, n_win, n_win)
         return X_pred
