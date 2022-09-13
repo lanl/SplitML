@@ -72,7 +72,8 @@ class SSA():
             X (ndarray): array of time series, shape (n, len(time))
             components (list or None): list of component indices to use or None to use all
         """
-        X_proj = self.transform(X, components)
+        X_lag, _ = lag_time_series(X, self.n_lags)
+        X_proj = self.transform(X_lag, components)
         if components is None:
             X_pred = X_proj @ self.Vh
         else:
