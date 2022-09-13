@@ -78,11 +78,11 @@ class SSA():
         X_lag, _ = lag_time_series(X, self.n_lags)
         X_proj = self.transform(X_lag.squeeze(), components)
         if components is None:
-            #X_pred = X_proj @ self.Vh
-            X_pred = np.einsum('ij,jk->jki', X_proj, self.Vh)
+            X_pred = X_proj @ self.Vh
+            #X_pred = np.einsum('ij,jk->jki', X_proj, self.Vh)
         else:
-            #X_pred = X_proj @ self.Vh[components, :]
-            X_pred = np.einsum('ij,jk->jki', X_proj, self.Vh[components, :])
+            X_pred = X_proj @ self.Vh[components, :]
+            #X_pred = np.einsum('ij,jk->jki', X_proj, self.Vh[components, :])
         n_win = X_pred.shape[0]
         X_pred = diag_avg(X_pred.T, self.X_len, self.n_lags, n_win, n_win)
         return X_pred
