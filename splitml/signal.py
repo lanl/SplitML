@@ -35,7 +35,7 @@ class VoigtSignal:
         """
         Return complex-valued time-domain signal given time vector t.
         """
-        return self.A * np.exp(-0.5*(t/self.sigma)**2) * np.exp(-t/self.T2) * np.exp(1j*(-2*np.pi*self.w*t + self.phi)) + self.C
+        return self.A * np.exp(-0.5*(t/self.sigma)**2) * np.exp(-t/self.T2) * np.exp(1j*(2*np.pi*self.w*t + self.phi)) + self.C
 
     def freq_signal(self, f_vec): 
         """
