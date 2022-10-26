@@ -1,0 +1,13 @@
+cff-version: 0.1.0-beta
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Klein"
+  given-names: "Natalie"
+  orcid: "https://orcid.org/0000-0002-7532-4013"
+- family-names: "Day"
+  given-names: "Amber"
+title: "SplitML"
+version: 0.1.0-beta
+doi: 10.5281/zenodo.7195633
+date-released: 2022-10-13
+url: "https://github.com/lanl/SplitML"

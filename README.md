@@ -24,6 +24,13 @@ Install `splitml` package locally:
 pip install -e .
 ```
 
+## Organization
+The code is organized as:
+
+* The `splitml/` directory contains the package source code.
+* The `results/` directory contains derivative products of using the source code.
+* The `examples/` directory contains example scripts and notebooks for using the package.
+
 ## Copyright notice
 
 © 2022. Triad National Security, LLC. All rights reserved.
