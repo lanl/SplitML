@@ -34,7 +34,23 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
 import torch
-from torch.nn import Module, Conv1d, ConvTranspose1d
+from torch.nn import Module, Conv1d, ConvTranspose1d, Linear
+
+class ComplexLinear(Module):
+    def __init__(self, in_features, out_features):
+        super(ComplexLinear, self).__init__()
+        self.fc_r = Linear(in_features, out_features)
+        self.fc_i = Linear(in_features, out_features)
+
+    def forward(self, input):
+        fwd_rr = self.fc_r(input.real)
+        fwd_ri = self.fc_r(input.imag)
+        fwd_ir = self.fc_i(input.real)
+        fwd_ii = self.fc_i(input.imag)
+        output = torch.zeros_like(fwd_rr.type(input.dtype))
+        output.real = fwd_rr - fwd_ii
+        output.imag = fwd_ri + fwd_ir
+        return output
 
 class ComplexConv1d(Module):
     """ Pytorch Conv1d adapted to complex-valued
