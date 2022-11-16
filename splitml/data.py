@@ -44,7 +44,7 @@ def split_noise(noise, n_timesteps):
 
 def synthetic_data_gen(N = 10000, nt = 1000, fs = 1./1.8e-05, w_range = [-50,50], 
                         phi_range = [-np.pi, np.pi], T2_range = [1e-3, 1e-2],
-                        sigma_range = [1e-3, 1e-2], A_range = [0.1,1], s = 1):
+                        sigma_range = [1e-3, 1e-2], A_range = [0.1,1], s = 1, seed=42):
     """
     Generating synthetic data with white noise
     
@@ -57,6 +57,7 @@ def synthetic_data_gen(N = 10000, nt = 1000, fs = 1./1.8e-05, w_range = [-50,50]
         T2_range & sigma_range : upper and lower bounds for generating the rate of decay, T2 & sigma
         A_range : upper and lower bounds for generating the initial amplitude, A
         s : variance for white noise generation
+        seed: random seed
         data_split : data is split into three sets (60% training, 20% testing, 20% validation)
     Outputs
         clean_training : synthetic dataset of signal without noise (0.6*N samples)
@@ -73,7 +74,7 @@ def synthetic_data_gen(N = 10000, nt = 1000, fs = 1./1.8e-05, w_range = [-50,50]
     """
 
     # Initializing Parameters
-    np.random.seed(42)
+    np.random.seed(seed)
     w = np.random.uniform(w_range[0], w_range[1], N)
     phi = np.random.uniform(phi_range[0], phi_range[1], N)
     T2 = np.random.uniform(T2_range[0], T2_range[1], N)
