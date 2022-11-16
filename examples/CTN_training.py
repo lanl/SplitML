@@ -7,7 +7,6 @@ import os
 from inspect import getmembers, isfunction, isclass
 import argparse
 from tqdm import tqdm
-import pandas as pd
 import numpy as np
 
 import matplotlib.pyplot as plt
@@ -82,20 +81,25 @@ def main():
     fc = 'f0' if args.central_f_zero else 'f1600'
     noisedist = 'whitenoise'
     save_stub = '%s_win%d_seed%d_%sSNR_%s_%s_%s' % (args.model, args.win, args.seed, snr, fc, noisedist, args.loss_fn)
-    if os.path.isfile('saved_models/%s_info.pt' % save_stub):
+    if os.path.isfile('%s/%s_info.pt' % (args.save_folder, save_stub)):
         print('already completed')
         return
 
     # %% generate data
-    (train_sigs, train_noisy, val_sigs, val_noisy, 
-        test_sigs, test_noisy, sig_params_training, sig_params_validation, 
-        sig_params_testing, t) = synthetic_data_gen(N = 10000, nt = 1024, fs = 1./1.8e-05, 
-                                                    w_range = [-50,50], phi_range = [-np.pi, np.pi], T2_range = [1e-3, 1e-2], 
-                                                    sigma_range = [1e-3, 1e-2], A_range = [1,2], s = 1)
+    if args.central_f_zero:
+        w_range = [-150, 150]
+    else:
+        w_range = [1450, 1750]
+    if args.high_snr_data:
+        A_range = [2.1, 3]
+    else:
+        A_range = [0.1, 1]
 
-    train_noise = train_noisy - train_sigs
-    val_noise = val_noisy - val_sigs
-    test_noise = test_noisy - test_sigs
+    (train_sigs, train_noise, val_sigs, val_noise, 
+        test_sigs, test_noise, sig_params_training, sig_params_validation, 
+        sig_params_testing, t) = synthetic_data_gen(N = 10000, nt = 1024, fs = 1./1.8e-05, 
+                                                    w_range = w_range, phi_range = [-np.pi, np.pi], T2_range = [1e-3, 1e-2], 
+                                                    sigma_range = [1e-3, 1e-2], A_range = A_range, s = 1, seed=args.seed)
 
     test_A = sig_params_testing['A'].values[:, None]
 
@@ -227,7 +231,6 @@ def main():
     hparams['loss'] = args.loss_fn
     hparams['high_snr_data'] = args.high_snr_data
     hparams['central_f_zero'] = args.central_f_zero
-    hparams['use_real_noise'] = args.use_real_noise
     writer.add_hparams(hparams, {'hparam/mse': test_mse, 'hparam/loss': test_loss}) 
 
     writer.flush()
@@ -237,8 +240,8 @@ def main():
     args_dict = vars(args)
     args_dict['test_mse'] = test_mse
     args_dict['test_loss'] = test_loss
-    torch.save(args_dict, 'saved_models/%s_info.pt' % save_stub)
-    torch.save(model.state_dict(), 'saved_models/%s_statedict.pt' % save_stub)
+    torch.save(args_dict, '%s/%s_info.pt' % (args.save_folder, save_stub))
+    torch.save(model.state_dict(), '%s/%s_statedict.pt' % (args.save_folder, save_stub))
 
 
 if __name__ == "__main__":
@@ -251,7 +254,7 @@ if __name__ == "__main__":
     parser.add_argument('--batch_size', default=256, type=int, help='Batch size')
     parser.add_argument('--lr', default=3e-4, type=float, help='Learning rate')
     parser.add_argument('--n_epochs', default=50, type=int, help='Epochs')
-    parser.add_argument('--save_folder',action='store', default='checkpoint', type=str, help='Folder to save trained model to')                    
+    parser.add_argument('--save_folder',action='store', default='saved_models', type=str, help='Folder to save trained model to')                    
     parser.add_argument('--resume', '-r', action='store_true', help='resume from checkpoint')
     parser.add_argument('--win', default=128, type=int, help='encoder kernel size')
     parser.add_argument('--enc_dim', default=512, type=int, help='encoder number of features')
