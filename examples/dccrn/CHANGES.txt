@@ -1,0 +1,15 @@
+Code is modified from https://github.com/huyanxin/DeepComplexCRN.
+Commit: bc6fd38b0af9e8feb716c81ff8fbacd7f71ad82f
+
+Original authors: Yanxin Hu, Yun Liu, Shubo Lv, Mengtao Xing, Shimin Zhang,Yihui Fu, Jian Wu, Bihong Zhang, Lei Xie
+Original license: see LICENSE.txt
+
+Modifications by Natalie Klein (LANL) to allow processing of complex-valued data.
+
+Summary of changes:
+
+dc_crn.py
+- Add argument for clamping or no clamping
+- Use local imports
+
+
