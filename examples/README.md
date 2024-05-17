@@ -13,3 +13,6 @@ Demonstrates pre-trained ConvTasNet on synthetic data; first run `CTN_training.p
 
 ### DCCRN: `DCCRN_evaluation.ipynb`
 Demonstrates performance of pre-trained DCCRN on synthetic data; first run `fit_dccrn_dualreal.py` followed by `load_dccrn_apply_test.py` to gather performance across hyperparameters.
+
+### Transfomer: `Transformer_training.ipynb`
+Demonstrates transformer model training on synthetic data. Uses `Transformer_training_functions.ipynb`.

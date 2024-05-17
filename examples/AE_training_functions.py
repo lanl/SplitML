@@ -89,6 +89,12 @@ def model_dual_real1(clean_training, noisy_training, clean_validation, noisy_val
     noisy_validation_data = torch.tensor(noisy_validation).to(device).type(torch.complex64)
     clean_validation_data = torch.tensor(clean_validation).to(device).type(torch.complex64)
 
+    noisy_training = torch.cat((noisy_training_data.real, noisy_training_data.imag),0)
+    clean_training = torch.cat((clean_training_data.real, clean_training_data.imag),0)
+
+    noisy_validation = torch.cat((noisy_validation_data.real, noisy_validation_data.imag),0)
+    clean_validation = torch.cat((clean_validation_data.real, clean_validation_data.imag),0)
+
     # Loss, Model and Optimizer
     model = DualRealNet(activation = activation, t_input=time_points).to(device) 
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay=5e-4)
@@ -97,45 +103,27 @@ def model_dual_real1(clean_training, noisy_training, clean_validation, noisy_val
     start_time = time.time()
     model.train() 
     for epoch in range(epochs):
-        # Forward for real component
-        out_real = model(noisy_training_data.real)
+        # Forward
+        out = model(noisy_training)
         if use_clean_training is False:
-            loss_real = loss_type(out_real, noisy_training_data.real)
+            loss = loss_type(out, noisy_training)
         else:
-            loss_real = loss_type(out_real, clean_training_data.real)
-        # Backward
-        optimizer.zero_grad() 
-        loss_real.backward() 
-        # Optimizer step to update weights
-        optimizer.step()
-        
-        # Forward for imag component
-        out_imag = model(noisy_training_data.imag)
-        if use_clean_training is False:
-            loss_imag = loss_type(out_imag, noisy_training_data.imag)
-        else:
-            loss_imag = loss_type(out_imag, clean_training_data.imag)
+            loss = loss_type(out, clean_training)
         # Backward
         optimizer.zero_grad()
-        loss_imag.backward() 
+        loss.backward()
         # Optimizer step to update weights
         optimizer.step()
-        
         # Save training loss during each epoch
-        loss_training.append(loss_real.item() + loss_imag.item())
+        loss_training.append(loss.item())
         # Save validation loss during each epoch
-        with torch.no_grad(): 
-            out_real = model(noisy_validation_data.real)
+        with torch.no_grad():
+            out = model(noisy_validation)
             if use_clean_validation is False:
-                loss_real = loss_type(out_real, noisy_validation_data.real)
+                loss = loss_type(out, noisy_validation)
             else:
-                loss_real = loss_type(out_real, clean_validation_data.real)
-            out_imag = model(noisy_validation_data.imag)
-            if use_clean_validation is False:
-                loss_imag = loss_type(out_imag, noisy_validation_data.imag)
-            else:
-                loss_imag = loss_type(out_imag, clean_validation_data.imag)
-            loss_validation.append(loss_real.item() + loss_imag.item())
+                loss = loss_type(out, clean_validation)
+            loss_validation.append(loss.item())
         # Stop when validation loss goes up for more iterations than patience
         if epoch > 200:
             if loss_validation[-1] > loss_validation[-2]:
@@ -146,7 +134,8 @@ def model_dual_real1(clean_training, noisy_training, clean_validation, noisy_val
             else:
                 trigger_times = 0
     # Training time
-    training_time = time.time()-start_time  
+    training_time = time.time()-start_time
+
     
     return model, loss_training, loss_validation, training_time
 
@@ -254,15 +243,15 @@ def model_dual_real1_concatenate(clean_training, noisy_training, clean_validatio
     clean_validation_data = torch.tensor(clean_validation).to(device).type(torch.complex64)
 
     # Loss, Model and Optimizaer
-    model = DualRealNet(activation = activation, t_input=time_points).to(device)
+    model = DualRealNet(activation = activation, t_input=2*time_points).to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay=5e-4)
 
     # Concatenate real and imaginary data into a real-valued 2-D time series
-    noisy_training = torch.cat((noisy_training_data.real, noisy_training_data.imag),0)
-    clean_training = torch.cat((clean_training_data.real, clean_training_data.imag),0)
+    noisy_training = torch.cat((noisy_training_data.real, noisy_training_data.imag),1)
+    clean_training = torch.cat((clean_training_data.real, clean_training_data.imag),1)
 
-    noisy_validation = torch.cat((noisy_validation_data.real, noisy_validation_data.imag),0)
-    clean_validation = torch.cat((clean_validation_data.real, clean_validation_data.imag),0)
+    noisy_validation = torch.cat((noisy_validation_data.real, noisy_validation_data.imag),1)
+    clean_validation = torch.cat((clean_validation_data.real, clean_validation_data.imag),1)
 
     # Train Network
     start_time = time.time()
