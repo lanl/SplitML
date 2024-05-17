@@ -123,6 +123,7 @@ def model_dual_real1(clean_training, noisy_training, clean_validation, noisy_val
                 loss = loss_type(out, noisy_validation)
             else:
                 loss = loss_type(out, clean_validation)
+            loss_validation.append(loss.item())
         # Stop when validation loss goes up for more iterations than patience
         if epoch > 200:
             if loss_validation[-1] > loss_validation[-2]:
