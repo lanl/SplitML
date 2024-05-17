@@ -10,6 +10,9 @@ from splitml.layers import ComplexLinear, PositionalEncoding, ComplexEncoderLaye
 
 
 class ComplexTransformer(nn.Module):
+    """
+    Complex-valued Transformer for denoising with components based on https://arxiv.org/abs/1910.10202.
+    """
     def __init__(self, d_model, num_heads, num_layers, d_ff, max_seq_length, dropout):
         super(ComplexTransformer, self).__init__()
         self.encoder_embedding = ComplexLinear(1, d_model)
@@ -42,6 +45,9 @@ class ComplexTransformer(nn.Module):
         return output
 
 class DRTransformer(nn.Module):
+    """
+    Dual-real Transformer for denoising (treats real/imag components independently)
+    """
     def __init__(self, d_model, num_heads, num_layers, d_ff, max_seq_length, dropout):
         super(DRTransformer, self).__init__()
         self.encoder_embedding = nn.Linear(1, d_model)
@@ -75,6 +81,9 @@ class DRTransformer(nn.Module):
         return output
 
 class DRCTransformer(nn.Module):
+    """
+    Dual-real concatenate Transformer for denoising; treats real/imag as two channels.
+    """
     def __init__(self, d_model, num_heads, num_layers, d_ff, max_seq_length, dropout):
         super(DRCTransformer, self).__init__()
         self.encoder_embedding = nn.Linear(2, d_model)
