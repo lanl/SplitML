@@ -69,3 +69,17 @@ class ComplexCardioid(Module):
 
     def forward(self, input):
         return complex_cardioid(input)
+    
+
+
+class ComplexDropout(torch.nn.Module):
+    
+    def __init__(self,p=0.5, inplace=False):
+        super(ComplexDropout,self).__init__()
+        self.p = p
+        self.inplace = inplace
+        self.dropout_r = torch.nn.Dropout(p, inplace)
+        self.dropout_i = torch.nn.Dropout(p, inplace)
+
+    def forward(self,input_r,input_i):
+        return self.dropout_r(input_r) + 1.j*self.dropout_i(input_i)
