@@ -120,7 +120,7 @@ class ComplexiSTFT(Module):
             n_fft=self.n_fft,
             hop_length=self.hop_length,
             win_length=self.win_length,
-            window=self.window.to(input.get_device()),
+            window=self.window.to(input.device),
             center=self.center,
             normalized=False,
             onesided=False,
